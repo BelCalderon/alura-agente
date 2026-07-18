@@ -1,15 +1,13 @@
 import os
 import sys
+import streamlit as st
 from config import obtener_cliente_groq
 
 def cargar_base_conocimiento(directorio_fuente="base_conocimiento"):
-    """
-    Escanea el directorio y consolida el contenido de los archivos Markdown.
-    """
+    """Carga y consolida los documentos Markdown de la base de conocimiento."""
     contexto_consolidado = ""
-    
     if not os.path.exists(directorio_fuente):
-        print(f"❌ Error crítico: El directorio '{directorio_fuente}' no existe.")
+        st.error(f"❌ Error crítico: El directorio '{directorio_fuente}' no existe.")
         sys.exit(1)
         
     for archivo_nombre in os.listdir(directorio_fuente):
@@ -21,85 +19,67 @@ def cargar_base_conocimiento(directorio_fuente="base_conocimiento"):
                     contexto_consolidado += archivo.read()
                     contexto_consolidado += f"\n--- FIN DOCUMENTO: {archivo_nombre} ---\n"
             except Exception as e:
-                print(f"⚠️ Advertencia: No se pudo leer el archivo {archivo_nombre}. Error: {e}")
-                
+                st.warning(f"⚠️ No se pudo leer {archivo_nombre}: {e}")
     return contexto_consolidado
 
-def inicializar_agente():
-    """Carga los documentos y estructura las directrices del sistema."""
+def inicializar_instrucciones_sistema():
+    """Genera las instrucciones del sistema con las reglas anti-alucinación."""
     base_conocimiento = cargar_base_conocimiento()
-    
-    instrucciones_sistema = (
+    return (
         "Eres el agente inteligente oficial de atención al cliente para la tienda 'BimBam Buy'.\n"
         "Tu única fuente de verdad es la 'Base de Conocimiento' provista a continuación.\n\n"
         "REGLAS ESTRICTAS DE COMPORTAMIENTO:\n"
         "1. Responde de manera sumamente educada, empática, clara y profesional.\n"
         "2. Responde única y exclusivamente utilizando la información contenida en la Base de Conocimiento.\n"
         "3. Si el usuario te pregunta algo que NO está detallado o implícito en los documentos proporcionados, "
-        "debes responder exactamente con la siguiente estructura, sin inventar ni agregar suposiciones:\n"
+        "deben responder exactamente con la siguiente estructura, sin inventar ni agregar suposiciones:\n"
         "   'Lo siento, actualmente no manejo esa información en mi base de datos. Por favor, contacta a un asesor humano para asistirte.'\n"
-        "4. Está estrictamente prohibido alucinar o inventar datos corporativos externos.\n\n"
+        "4. Está estrictamente prohibido alucinar, simular políticas, inventar precios o condiciones.\n"
+        "5. Usa un formato limpio, viñetas y saltos de línea cuando sea necesario.\n\n"
         f"=== BASE DE CONOCIMIENTO ===\n{base_conocimiento}\n============================="
     )
-    return instrucciones_sistema
 
-def ejecutar_chat_conversacional():
-    """Gestiona el bucle de conversación e interactúa con la API de Groq."""
-    try:
-        cliente_ai = obtener_cliente_groq()
-    except ValueError as e:
-        print(e)
-        return
+# Configuración de la interfaz de la página en Streamlit
+st.set_page_config(page_title="Soporte Inteligente - BimBam Buy", page_icon="🤖", layout="centered")
 
-    # Usamos llama-3.3-70b-versatile, el modelo de código abierto más potente y gratuito en Groq
-    modelo_seleccionado = "llama-3.3-70b-versatile"
-    instrucciones = inicializar_agente()
+# Inicializar estados de memoria avanzada si no existen
+if "mensajes_historial" not in st.session_state:
+    st.session_state.mensajes_historial = []
+if "instrucciones" not in st.session_state:
+    st.session_state.instrucciones = inicializar_instrucciones_sistema()
 
-    # Historial de conversación estructurado para mantener el contexto del chat
-    historial_mensajes = [
-        {"role": "system", "content": instrucciones}
-    ]
+st.title("🤖 BimBam Buy")
+st.subheader("Módulo de Atención al Cliente Inteligente")
+st.markdown("---")
 
-    print("\n======================================================================")
-    print("🤖 AGENTE INTELIGENTE BIMBAM BUY - MÓDULO DE ATENCIÓN AL CLIENTE (GROQ)")
-    print("El sistema se ha inicializado correctamente.")
-    print("Escribe tu consulta en lenguaje natural. Escribe 'salir' para finalizar.")
-    print("======================================================================\n")
+# Renderizar el historial visual de la conversación de forma elegante
+for mensaje in st.session_state.mensajes_historial:
+    with st.chat_message(mensaje["role"]):
+        st.markdown(mensaje["content"])
 
-    while True:
+# Capturar la consulta del cliente
+if consulta_usuario := st.chat_input("Escribe tu consulta aquí..."):
+    with st.chat_message("user"):
+        st.markdown(consulta_usuario)
+    st.session_state.mensajes_historial.append({"role": "user", "content": consulta_usuario})
+
+    # Preparar el contexto completo para la API de Groq (Memoria Avanzada)
+    mensajes_api = [{"role": "system", "content": st.session_state.instrucciones}]
+    for msg in st.session_state.mensajes_historial:
+        mensajes_api.append({"role": msg["role"], "content": msg["content"]})
+
+    # Llamar al motor de inferencia
+    with st.chat_message("assistant"):
+        contenedor_respuesta = st.empty()
         try:
-            usuario_entrada = input("👤 Cliente: ").strip()
-            
-            if not usuario_entrada:
-                continue
-                
-            if usuario_entrada.lower() == "salir":
-                print("\n🤖 Agente: Gracias por comunicarte con BimBam Buy. Que tengas un excelente día. Sesión finalizada.")
-                break
-
-            print("\n🤖 Agente analizando y procesando...")
-            
-            # Agregamos la entrada del cliente al historial
-            historial_mensajes.append({"role": "user", "content": usuario_entrada})
-            
-            # Llamada al endpoint de inferencia de Groq
+            cliente_ai = obtener_cliente_groq()
             ref_respuesta = cliente_ai.chat.completions.create(
-                model=modelo_seleccionado,
-                messages=historial_mensajes,
-                temperature=0.0  # Máxima precisión determinista
+                model="llama-3.3-70b-versatile",
+                messages=mensajes_api,
+                temperature=0.0
             )
-            
-            bot_respuesta = ref_respuesta.choices[0].message.content
-            
-            print(f"\n🤖 Agente: {bot_respuesta}")
-            print("-" * 70)
-            
-            # Persistimos la respuesta en el historial para mantener la memoria
-            historial_mensajes.append({"role": "assistant", "content": bot_respuesta})
-
+            respuesta_final = ref_respuesta.choices[0].message.content
+            contenedor_respuesta.markdown(respuesta_final)
+            st.session_state.mensajes_historial.append({"role": "assistant", "content": respuesta_final})
         except Exception as e:
-            print(f"\n❌ Ocurrió un error inesperado durante la comunicación: {e}")
-            break
-
-if __name__ == "__main__":
-    ejecutar_chat_conversacional()
+            st.error(f"❌ Error de comunicación: {e}")

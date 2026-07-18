@@ -1,36 +1,48 @@
-# Agente de Atención al Cliente Inteligente - BimBam Buy
+# 🤖 Agente de Atención al Cliente Inteligente - BimBam Buy
 
-¡Bienvenido/a al repositorio oficial del Agente de IA para BimBam Buy! Este proyecto fue desarrollado como parte del desafío **Alura Agente**, con el objetivo de automatizar y optimizar la atención al cliente para operaciones en LATAM utilizando Inteligencia Artificial.
+¡Bienvenido/a al repositorio oficial del Agente de IA para BimBam Buy! Este proyecto ha sido desarrollado como parte del desafío **Alura Agente**, con el objetivo de automatizar, optimizar y elevar la calidad de la atención al cliente en operaciones de comercio electrónico para LATAM utilizando Inteligencia Artificial de última generación.
 
-El chatbot está diseñado para interactuar con los usuarios de forma clara, amable y dinámica, respondiendo con total precisión con base en las políticas oficiales de la tienda y evitando cualquier tipo de "alucinación" o información falsa.
+La solución consiste en un asistente virtual interactivo dotado de una interfaz web intuitiva. El agente procesa de forma precisa las consultas de los usuarios sobre envíos, garantías, devoluciones y políticas comerciales, garantizando respuestas alineadas con los manuales corporativos y eliminando el riesgo de alucinaciones en el modelo de lenguaje.
 
 ---
 
-## 📂 Estructura del Repositorio
+## 📐 Arquitectura de la Solución
 
-Para mantener el proyecto limpio, modular y organizado, la información se distribuye de la siguiente manera:
+La aplicación implementa una arquitectura basada en **Inyección de Contexto en Tiempo Real (RAG Simplificado)**. Este enfoque asegura que el modelo de lenguaje base no dependa de su conocimiento general, sino de la información oficial provista:
 
-* **`base_conocimiento/`**: Carpeta que almacena los manuales oficiales de la tienda en formato Markdown (.md) para alimentar el contexto del agente.
-  * `Manual_Garantia.md`: Políticas de cobertura, plazos y exclusiones de soporte técnico.
-  * `Politica_Devoluciones.md`: Reglas de derecho de retracto, reportes de 48 horas y reembolsos.
-  * `Guia_Envios.md`: Tiempos estimados de entrega, costos y gestión de incidencias logísticas.
-  * `Programa_Afiliados.md`: Lineamientos, comisiones y atribución de ventas para socios comerciales.
-  * `Preguntas_Frecuentes.md`: Base de preguntas y respuestas internas para criterios de soporte directos.
-* **`agent.py`**: Archivo principal que contiene el código en Python que da vida y ejecuta el chatbot de IA.
-* **`requirements.txt`**: Archivo de configuración con la lista de librerías y dependencias necesarias para ejecutar el entorno de desarrollo.
+1. **Capa de Datos (Base de Conocimiento)**: Los manuales y políticas operativos de la tienda se almacenan en archivos estructurados en formato Markdown (`.md`) dentro del directorio `base_conocimiento/`.
+2. **Carga y Centralización de Configuraciones (`config.py`)**: Este módulo se encarga de gestionar de forma segura el entorno del sistema, cargando las variables de entorno (`.env`) y estructurando las rutas de los archivos de conocimiento para su consumo.
+3. **Orquestación del Agente e Interfaz (`agent.py`)**: Al inicializar la aplicación, el script lee dinámicamente los documentos de la base de conocimiento y los inyecta de manera estructurada en el *System Prompt* del modelo de IA, delimitando estrictamente el marco de las respuestas permitidas.
+4. **Inferencia de Baja Latencia (Groq Cloud)**: Cuando un usuario envía un mensaje a través de la interfaz web desarrollada en **Streamlit**, la consulta se procesa mediante la API de Groq utilizando un modelo fundacional de alta velocidad, garantizando tiempos de respuesta mínimos.
 
 ---
 
 ## 🛠️ Tecnologías y Herramientas Utilizadas
 
-* **Python**: Lenguaje de programación principal para la lógica del agente.
-* **Markdown**: Formato utilizado para la estructuración limpia de la base de conocimiento.
-* **Git & GitHub**: Herramientas para el control de versiones y alojamiento del código en la nube.
+* **Python 3.14**: Entorno de programación principal utilizado para la lógica del agente y la manipulación de datos.
+* **Streamlit**: Framework ágil utilizado para el diseño y despliegue de la interfaz gráfica de usuario (UI).
+* **Groq Cloud API**: Infraestructura de inferencia de alto rendimiento para el procesamiento del lenguaje natural.
+* **Python-dotenv**: Librería para la gestión segura de credenciales y variables de entorno.
+* **Markdown**: Estándar utilizado para la redacción limpia y jerárquica de los manuales de soporte.
 
 ---
 
-## 🚀 Próximos Pasos del Desarrollo
+## 📂 Estructura del Repositorio
 
-1. **Configuración del Entorno Virtual**: Aislar el espacio de trabajo en Python.
-2. **Estructura del Código (`agent.py`)**: Conectar la base de conocimiento con el modelo de IA.
-3. **Pruebas de Simulación**: Evaluar las respuestas del agente frente a casos reales de clientes.
+La disposición de los archivos en el proyecto sigue estándares de modularidad y orden limpio:
+
+```text
+challenge-bimbambuy/
+├── base_conocimiento/         # Documentos oficiales que alimentan el contexto del agente
+│   ├── Guia_Envios.md
+│   ├── Manual_Garantia.md
+│   ├── Politica_Devoluciones.md
+│   ├── Preguntas_Frecuentes.md
+│   └── Programa_Afiliados.md
+├── venv/                      # Entorno virtual de Python (omitido en el control de versiones)
+├── .env                       # Variables de entorno secretas (Clave de API de Groq)
+├── .gitignore                 # Archivo de configuración para omitir archivos locales en Git
+├── agent.py                   # Lógica principal del agente e interfaz de Streamlit
+├── config.py                  # Módulo de configuración y carga de variables del sistema
+├── README.md                  # Documentación técnica del proyecto
+└── requirements.txt           # Dependencias y librerías del proyecto

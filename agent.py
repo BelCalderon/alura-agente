@@ -41,6 +41,16 @@ def inicializar_instrucciones_sistema():
 
 # Configuración de la interfaz de la página en Streamlit
 st.set_page_config(page_title="Soporte Inteligente - BimBam Buy", page_icon="🤖", layout="centered")
+# Mensaje de bienvenida y contexto para el usuario
+st.info("""
+👋 **¡Bienvenido al asistente inteligente de BimBam Buy!**
+Aquí podrás gestionar tus dudas y consultas sobre nuestras operaciones en tiempo real. 
+Puedes preguntarme con total libertad acerca de:
+* 🚚 **Guía de Envíos:** Tiempos de entrega para ciudades principales y zonas remotas.
+* 🛡️ **Políticas de Garantía:** Coberturas, plazos de soporte técnico y exclusiones.
+* 🔄 **Devoluciones:** Derecho de retracto, reportes de incidencias y reembolsos.
+* 🤝 **Programa de Afiliados:** Comisiones y lineamientos para socios comerciales.
+""")
 
 # Inicializar estados de memoria avanzada si no existen
 if "mensajes_historial" not in st.session_state:

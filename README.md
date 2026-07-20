@@ -46,3 +46,56 @@ challenge-bimbambuy/
 ├── config.py                  # Módulo de configuración y carga de variables del sistema
 ├── README.md                  # Documentación técnica del proyecto
 └── requirements.txt           # Dependencias y librerías del proyecto
+```
+---
+
+## 🚀 Instrucciones para Ejecutar el Proyecto (Localmente)
+
+Si deseas replicar este entorno de desarrollo localmente, sigue estos pasos estructurados:
+
+1.  ****Clonar el repositorio:****
+    Bash
+    
+    git clone \[https://github.com/BelCalderon/alura-agente.git\](https://github.com/BelCalderon/alura-agente.git)  
+    cd challenge-bimbambuy  
+    
+2.  ****Configurar y activar el entorno virtual:**** 
+    PowerShell
+    
+    python -m venv venv  
+    .\\venv\\Scripts\\activate  
+    
+3.  *****Instalar dependencias necesarias:****  
+    Bash
+    
+    pip install --upgrade pillow  
+    pip install -r requirements.txt  
+    
+4.  ****Variables de entorno:**** Crea un archivo `.env` en la raíz del proyecto y añade tu API Key:  
+    Plaintext
+    
+    GROQ\_API\_KEY=tu\_gsk\_key\_aqui  
+    
+5.  ****Iniciar la aplicación:****  
+    PowerShell
+    
+    streamlit run agent.py  
+
+--- 
+
+## 💬 Ejemplos de Preguntas y Respuestas del Agente
+
+Aquí se muestran escenarios reales de interacción con el asistente inteligente basados en los manuales operativos:
+
+-   ****Pregunta:**** __¿Cuáles son las comisiones para afiliados?__
+-   ****Respuesta del Agente:**** "¡Hola! De acuerdo con nuestro Programa de Afiliados, los socios comerciales reciben una estructura de comisiones competitiva basada en la atribución directa de ventas validadas a través de sus enlaces de referencia. Los detalles específicos de los porcentajes varían según la categoría del producto promocionado."
+-   ****Pregunta:**** __¿Cuántos días tengo para devoluciones?__
+-   ****Respuesta del Agente:**** "Revisando nuestra Política de Devoluciones oficial, cuentas con un plazo estricto de hasta 48 horas posteriores a la recepción de tu paquete para reportar cualquier incidencia física o faltante. Adicionalmente, se contempla el derecho de retracto bajo los lineamientos legales estándar de la región."
+---
+
+## ☁️ Evidencia del Despliegue en la Nube
+
+La aplicación ha sido desplegada con éxito en producción y se encuentra totalmente operativa para acceso público:
+
+-   🔗 ****Enlace de la aplicación en producción:****
+[https://alura-agente-vs3dlek7qffqrjuxz4hqmf.streamlit.app/](https://alura-agente-vs3dlek7qffqrjuxz4hqmf.streamlit.app/)
